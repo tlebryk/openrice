@@ -13,6 +13,7 @@ CATEGORIES = {
     # 營業時間blank line; ignore
     "營業時間" : None,
     "網址": "Website",
+    "網址/電郵:" : "Website",
     "facebook": "Facebook",
     "instagram": "Instagram",
     "openrice": "OpenRice",
@@ -38,7 +39,7 @@ for file in os.listdir(path):
         buffer = f.read()
         # first line is "shop information" which we drop
         split_by_line = buffer.split("\n")
-        data = {}
+        data = {'filename' : file}
         
 
         for i, line in enumerate(split_by_line):
@@ -58,7 +59,7 @@ for file in os.listdir(path):
     data_ls.append(data)
 df = pd.DataFrame(data_ls)
 # path = r"data/csvs/yellow_eat/"
-df.to_csv(f"{path}csvs/{folder}.csv")
+df.to_csv(f"{path}csvs/{folder}.csv", encoding="utf-8", index=False)
 
 
 

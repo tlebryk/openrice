@@ -1,7 +1,7 @@
 import os
 import pandas as pd
-folder = "green_shop"
-path = f"data/{folder}/"
+folder = "blue_eat"
+path = f"data/raw/{folder}/"
 if not os.path.exists(f'{path}csvs/'):
     os.makedirs(f'{path}csvs/')
 # match cateogories to strings: 
@@ -13,6 +13,7 @@ CATEGORIES = {
     # 營業時間blank line; ignore
     "營業時間" : None,
     "網址": "Website",
+    "網址/電郵:" : "Website",
     "facebook": "Facebook",
     "instagram": "Instagram",
     "openrice": "OpenRice",
@@ -60,33 +61,32 @@ data_ls = []
 for file in os.listdir(path):
     if "csvs" in file: 
         continue
-    with open (f"{path}/{file}", "r", encoding="utf-8") as f:
+    with open (fr"{path}/{file}", "r", encoding="utf-8") as f:
         buffer = f.read()
         # buf2 = buffer.replace("\n\n", "\n")
         # first line is "shop information" which we drop
     split_by_line = buffer.split("\n")
-    data = {}     
+    data = {"filename": file}     
     for i, line in enumerate(split_by_line):
         index = line.find(":")
         if index: 
             sub_str = line[:index].strip().lower()
             if (category := CATEGORIES.get(sub_str)):
                 data[category] = line[index+1:].strip()
-            elif (sub_str == "原因"):
-                category = "Reason"
-                j = i + 1   
-                k = 1
+            # elif (sub_str == "原因"):
                 source_type = "No_source"
+
+        cate = "Reason"
+        for source in SOURCES:
+            if source in split_by_line[i]:
+                k = 1
+                source_type = SOURCES[source]
+                j = i+1
                 while j < len(split_by_line):
-                    if split_by_line[j].strip(":").lower() in LIST_STRS:
+                    if split_by_line[j].strip(":").lower() in LIST_STRS or \
+                    split_by_line[j].strip(":").lower() in CATEGORIES:
                         break
-                    for source in SOURCES:
-                        if source in split_by_line[j]:
-                            k = 1
-                            source_type = SOURCES[source]
-                            j+=1
-                            break
-                    data[f"{category}_{source_type}_{k}"] = split_by_line[j]
+                    data[f"{cate}_{source_type}_{k}"] = split_by_line[j]
                     k+=1
                     j+=1
             
@@ -104,7 +104,7 @@ for file in os.listdir(path):
     data_ls.append(data)
 df = pd.DataFrame(data_ls)
 # path = r"data/csvs/yellow_eat/"
-df.to_csv(f"{path}csvs/{folder}.csv")
+df.to_csv(f"{path}csvs/{folder}.csv", encoding="utf-8", index=False)
 
 
 
