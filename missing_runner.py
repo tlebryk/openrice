@@ -25,23 +25,29 @@ logging.basicConfig(
 
 
 # @defer.inlineCallbacks
-def get_pg(p, direct, runner, start, finish):
-    logging.info(f"Working on {direct}")
-    path = os.path.join(p, direct, "csvs")
-    # for f in os.listdir(path):
-    logging.info(f"opening file {direct}")
-    df = pd.read_csv(f"{path}/{direct}.csv", encoding="utf-8")
+def get_pg(path, folder, runner, start, finish):
+    """
+    :path: path to directory with existing data
+    :folder: basically search_string (yellow_eat, blue_shop, green_chains etc.)
+    :runner: runner with desired settings
+    :start: first id to start scraping with (legacy from main scraper)
+    :finish: last id to stop scrapping at (legacy from main scraper)
+    """
+    logging.info(f"Working on {folder}")
+    logging.info(f"opening file {folder}")
+    df = pd.read_csv(f"{path}/{folder}.csv", encoding="utf-8")
     # NOTE: doing mini version to start
     start_len = len(df)
     df = df[df["OpenRice"].fillna("").str.contains("openrice")]
     ending_len = len(df)
-    logging.info(f"{start_len} total raw shops, {ending_len} shops with openrice urls; \
+    logging.info(f"{start_len} total missing shops, {ending_len} missing shops with openrice urls; \
         dropped {start_len - ending_len} without openrice info")
     df = df.sort_values("id")
     df = df.iloc[start:finish]
     urls = list(df['OpenRice'])
+    logging.info(f"urls: {urls}")
     ids = list(df['id'])
-    runner.crawl(Meta, start_urls=urls, ids=ids, name=direct)
+    runner.crawl(Meta, start_urls=urls, ids=ids, name=folder)
     runner.start()
     # reactor.stop()
 
@@ -53,7 +59,7 @@ def main(folder, start, finish):
     if not os.path.exists(feed):
         os.makedirs(feed)
     settings["FEEDS"] = {
-            f"data/shop_meta/{folder}/{folder}_missing{DATENOW}.csv": {
+            f"data/shop_meta/{folder}_missing{DATENOW}_{start}_{finish}.csv": {
             "format": "csv",
             "encoding": "utf8",
             "overwrite": True,
@@ -61,17 +67,18 @@ def main(folder, start, finish):
     }
     # runner = CrawlerRunner(settings)
     runner = CrawlerProcess(settings=settings)
-    p = os.path.join(d, "missing")
+    # path to folder with all missing entries from first scrape
+    path = os.path.join(d, "missing")
     if not folder:
-        for direct in os.listdir(p):
-            if os.path.isfile(f"{p}{direct}"):
+        for direct in os.listdir(path):
+            if os.path.isfile(f"{path}{direct}"):
                 continue
             else:
-                get_pg(p, direct, runner, start, finish)
+                get_pg(path, direct, runner, start, finish)
     else:
         logging.info(f"Working on {folder}")
         # path = os.path.join(p, folder, "csvs")
-        get_pg(p, folder, runner, start, finish) 
+        get_pg(path, folder, runner, start, finish) 
     # runner.start()
     # reactor.run()
     
@@ -85,7 +92,7 @@ if __name__ == "__main__":
         nargs="?",
         default=None
     )
-    
+
     parser.add_argument(
         "--start",
         help="index to start from.",
@@ -98,7 +105,7 @@ if __name__ == "__main__":
         help="index to end from.",
         type=int,
         nargs="?",
-        default=-1
+        default=None
     )
     args = parser.parse_args()
     main(

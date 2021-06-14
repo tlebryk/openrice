@@ -20,7 +20,6 @@ logging.basicConfig(
 )
 
 
-    # p2 = os.path.join(path, direct, "csvs")
 
 
 # @defer.inlineCallbacks
@@ -98,7 +97,7 @@ if __name__ == "__main__":
         help="index to end from.",
         type=int,
         nargs="?",
-        default=-1
+        default=None
     )
     args = parser.parse_args()
     main(

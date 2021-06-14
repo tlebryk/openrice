@@ -146,10 +146,11 @@ class Meta(scrapy.Spider):
         for i, category in enumerate(categories):
             meta[f'categories_{i}'] = category
         smiley = response.css(".header-smile-section").css(".score-div::text").getall()
-        meta['positive_reviews'] = int(smiley[0])
-        meta['ok_reviews'] = int(smiley[1])
-        meta['negative_reviews'] = int(smiley[2])
-        meta['total_reviews'] = meta['positive_reviews'] + meta['ok_reviews'] + meta['negative_reviews']
+        if smiley:
+            meta['positive_reviews'] = int(smiley[0])
+            meta['ok_reviews'] = int(smiley[1])
+            meta['negative_reviews'] = int(smiley[2])
+            meta['total_reviews'] = meta['positive_reviews'] + meta['ok_reviews'] + meta['negative_reviews']
         payment_methods = self.get_payment_methods(response)
         if payment_methods:
             for i, method in enumerate(payment_methods):

@@ -8,11 +8,16 @@ def main(folder):
     d = f"{HOMEDIR}/OneDrive - pku.edu.cn/China in Transition/openrice/data/"
     raw_dir = f"{d}raw/{folder}/csvs/"
     shop_dir = f"{d}shop_meta/{folder}/"
+    running_dfs = []
+    for f in os.listdir(shop_dir):
+        df = pd.read_csv(f"{shop_dir}{f}", encoding="utf-8")
+        running_dfs.append(df)
+    df_shop = pd.concat(running_dfs)
     df_raw = pd.read_csv(fr"{raw_dir}{folder}.csv", encoding="utf-8")
-    df_shop = pd.read_csv(fr"{shop_dir}{folder}.csv", encoding="utf-8")
+    # df_shop = pd.read_csv(fr"{shop_dir}{folder}.csv", encoding="utf-8")
     df_raw = df_raw[df_raw["OpenRice"].fillna("").str.contains("openrice")]
     missing_df=df_raw[~df_raw["id"].isin(df_shop['id'])]
-    missing_df.to_csv(fr"{d}missing/{folder}.csv")
+    missing_df.to_csv(fr"{d}missing/{folder}.csv", index=False)
 
 
 
