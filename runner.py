@@ -30,7 +30,7 @@ def get_pg(p, direct, runner, start, finish):
     logging.info(f"opening file {direct}")
     df = pd.read_csv(f"{path}/{direct}.csv", encoding="utf-8")
     # NOTE: doing mini version to start
-    start_len = len(df)
+
     
     df = df[df["OpenRice"].fillna("").str.contains("openrice")]
     ending_len = len(df)

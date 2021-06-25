@@ -21,7 +21,7 @@ NEWSPIDER_MODULE = 'openrice.spiders'
 HOMEDIR = os.path.expanduser("~")
 DATETIMENOW = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-LOG_STDOUT = True
+# LOG_STDOUT = True
 # LOG_FILE = f"{HOMEDIR}/OneDrive - pku.edu.cn/China in Transition/openrice/logs/openspider_{DATETIMENOW}.log"
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
@@ -48,7 +48,7 @@ DOWNLOADER_MIDDLEWARES = {
             'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware': None,
             'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 800,
             'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-            # 'scrapy_useragents.downloadermiddlewares.useragents.UserAgentsMiddleware': 500,
+            'scrapy_useragents.downloadermiddlewares.useragents.UserAgentsMiddleware': 500,
             'scrapy.contrib.downloadermiddleware.redirect.RedirectMiddleware': None,
             "scrapy.downloadermiddlewares.redirect.RedirectMiddleware": None,
             'scrapy.contrib.downloadermiddleware.redirect.MetaRefreshMiddleware': None,
