@@ -39,17 +39,20 @@ DEFAULT_REQUEST_HEADERS = {
         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
         'cache-control': 'max-age=0',
     }
-PROXY_POOL_ENABLED = True
+# TODO: UNCOMMENT
+# PROXY_POOL_ENABLED = True
 
 DOWNLOADER_MIDDLEWARES = {
 
             'openrice.middlewares.ProxyPoolMiddleware': 610,
             'openrice.middlewares.BanDetectionMiddleware': 620,
             'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware': None,
-            'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 800,
+            # TODO: UNCOMMENT
+            # 'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 800,
             'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
             'scrapy_useragents.downloadermiddlewares.useragents.UserAgentsMiddleware': 500,
-            'scrapy.contrib.downloadermiddleware.redirect.RedirectMiddleware': None,
+            # TODO: UNCOMMENT
+            # 'scrapy.contrib.downloadermiddleware.redirect.RedirectMiddleware': None,
             "scrapy.downloadermiddlewares.redirect.RedirectMiddleware": None,
             'scrapy.contrib.downloadermiddleware.redirect.MetaRefreshMiddleware': None,
 
