@@ -9,6 +9,7 @@ from datetime import datetime
 
 HOMEDIR = os.path.expanduser("~")
 DATETIMENOW = datetime.now().strftime("%Y%m%d_%H%M%S")
+DATEFOLDER = datetime.now().strftime("%Y%m%d")
 
 logging.basicConfig(
     format="%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s",
@@ -36,7 +37,7 @@ def main(folder, start, finish):
     # df = df[(df["id"] < finish) & (df["id"] >= start)]
     df = df.iloc[start:finish]
     logging.info(f"Reduced to {len(df)} rows")
-    feed = f"data/reviews/{folder}"
+    feed = f"data/reviews/{folder}/{DATEFOLDER}"
     logging.info(f"Hoping to save to {feed}")
     if not os.path.exists(feed):
         os.makedirs(feed)
@@ -45,13 +46,13 @@ def main(folder, start, finish):
     settings["FEEDS"] = {
             f"{feed}/{folder}_id{min_id}-{max_id}_start_{start}-{finish}.csv": {
             "format": "csv",
-            # "encoding": "utf8",
+            "encoding": "utf8",
             "overwrite": True,
             }
     }
     # runner = CrawlerRunner(settings)
     runner = CrawlerProcess(settings=settings)
-    # runner.crawl(OpenriceSpider, df=df, name = "ReviewSpider")
+    runner.crawl(OpenriceSpider, df=df, name = "ReviewSpider")
     logging.info("kicking off spider")
     runner.start()
 

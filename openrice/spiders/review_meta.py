@@ -22,11 +22,15 @@ logger = logging.getLogger('root')
 
 class Meta(scrapy.Spider):
     name = "Meta"
-    # start_urls = ["https://s.openrice.com/QrbS0m54A00~d9kqaCjV2"]
+    start_urls = ["https://www.openrice.com/en/hongkong/r-so-boring-yau-ma-tei-international-vegetarian-r539982"]
 
-    def __init__(self, start_urls, ids, name, **kwargs):
-        self.start_urls = start_urls
-        self.ids = ids
+    def __init__(self, 
+        # start_urls, ids, 
+        name, **kwargs):
+        # self.start_urls = start_urls
+        self.start_urls = ["https://www.openrice.com/en/hongkong/r-so-boring-yau-ma-tei-international-vegetarian-r539982"]
+        self.ids = [0]
+        # self.ids = ids
         super().__init__(name=name, **kwargs)
 
 
@@ -117,12 +121,29 @@ class Meta(scrapy.Spider):
                 tickcross = 0
             yield (text, tickcross)
 
+    def get_title(self, response, og_url, id_):
+        title = response.css("div.poi-name")
+        title_text = title.css(" ::text").get()
+        moved = title.css("a::attr(href)").get()
+        if moved:
+            return scrapy.Request(url=moved, callback=self.parse, cb_kwargs={"og_url": og_url, "id_": id_})
+ 
+
     # TODO: include pagination
     def parse(self, response, og_url, id_):
         # return dict(a=1,b=2,c=3)
         meta = {}
         meta["id"] = id_
         meta["original_url"] = og_url
+        title = response.css("div.poi-name")
+        meta["scrape_time"] = datetime.now()
+        meta["title_main"] = title.css("span.name::text").get()
+        meta["title_add"] = title.css("span.poi-with-other-status::text").get()
+        # title_text = title.css(" ::text").get()
+        # moved = title.css("a::attr(href)").get()
+        # if moved:
+        #     return scrapy.Request(url=moved, callback=self.parse, cb_kwargs={"og_url": og_url, "id_": id_})
+        # meta["title_text"] = title_text
         meta["response_url"] = response.url
         meta["reviews_url"] = self.get_review_links(response)
         meta["jobs_link"] = self.get_job_links(response)

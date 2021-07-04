@@ -11,7 +11,7 @@ class OpenriceSpider(scrapy.Spider):
 
     def __init__(self, df, name, **kwargs):
         self.urls_ids = zip(df["id"], df["reviews_url"])
-
+        # self.urls_ids = zip([0,1], self.start_urls)
         super().__init__(name=name, **kwargs)
 
     def start_requests(self):
@@ -78,8 +78,8 @@ class OpenriceSpider(scrapy.Spider):
             review_dct['user_link'] = reviewer.xpath(".//@href").get()
             # information about review
             title = rev.css("div.review-title")
-            review_dct["title"] = title.css("*::text").get()
             review_dct["review_link"] = title.xpath(".//a/@href").get()
+            review_dct["title"] = title.xpath(".//a/text()").get()
 
 
             review_dct['emoji'] = rev.css(".left-header").xpath(".//div/@class").get()        
@@ -93,16 +93,16 @@ class OpenriceSpider(scrapy.Spider):
             details = rev.css(".info-section")
             details_dct = {}
             # first contains date of visit, waiting time etc. 
-            if details_dct:
+            if details:
                 for detail in details[0].css("section.info"):
                     key = detail.css(".title::text").get().replace(" ", "_").lower()
                     value = detail.css(".text::text").get()
                     details_dct[key] = value
-                # second contains recommended dishs
-                if len(details) > 1:
-                    key = details[1].css(".title::text").get().replace(" ", "_").lower()
-                    value = details[1].css(".dish-name::text").getall()
-                    details_dct[key] = value
+            # second contains recommended dishs
+            if len(details) > 1:
+                key = details[1].css(".title::text").get().replace(" ", "_").lower()
+                value = details[1].css(".dish-name::text").getall()
+                details_dct[key] = value
             fields = ["date_of_visit", "dining_method", "spending_per_head", "recommended_dishes", "waiting_time", "type_of_meal"]
             for f in fields:
                 if not details_dct.get(f):

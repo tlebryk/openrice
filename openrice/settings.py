@@ -48,11 +48,11 @@ DOWNLOADER_MIDDLEWARES = {
             'openrice.middlewares.BanDetectionMiddleware': 620,
             'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware': None,
             # TODO: UNCOMMENT
-            # 'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 800,
+            'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 800,
             'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-            'scrapy_useragents.downloadermiddlewares.useragents.UserAgentsMiddleware': 500,
+            # 'scrapy_useragents.downloadermiddlewares.useragents.UserAgentsMiddleware': 500,
             # TODO: UNCOMMENT
-            # 'scrapy.contrib.downloadermiddleware.redirect.RedirectMiddleware': None,
+            'scrapy.contrib.downloadermiddleware.redirect.RedirectMiddleware': None,
             "scrapy.downloadermiddlewares.redirect.RedirectMiddleware": None,
             'scrapy.contrib.downloadermiddleware.redirect.MetaRefreshMiddleware': None,
 
