@@ -33,9 +33,12 @@ def main(folder, start, finish):
         finish = max(df.id)+1
     # logging.infof"finish: {finish}")
     # logging.infof"start: {start}")
-    df.id = df.id.astype(int)
+    # df.id = df.id.astype(int)
     # df = df[(df["id"] < finish) & (df["id"] >= start)]
-    df = df.iloc[start:finish]
+        df = df.iloc[start:]
+    else: 
+        df = df.iloc[start:finish]
+    df = df[~df.reviews_url.isna()]
     logging.info(f"Reduced to {len(df)} rows")
     feed = f"data/reviews/{folder}/{DATEFOLDER}"
     logging.info(f"Hoping to save to {feed}")

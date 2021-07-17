@@ -2,11 +2,6 @@ import boto3
 import logging
 from botocore.exceptions import ClientError
 import re
-import pandas as pd
-import io
-
-DEV = boto3.session.Session(profile_name="user1")
-
 
 def upload_s3(file_name, object_name=None, s3_client=None, bucket="openrice"):
     """Upload a file to an S3 bucket
@@ -22,7 +17,7 @@ def upload_s3(file_name, object_name=None, s3_client=None, bucket="openrice"):
 
     # instantiate the client if not already specified
     if s3_client is None:
-        s3_client = DEV.client("s3")
+        s3_client = boto3.client("s3")
     # Upload the file
     try:
         response = s3_client.upload_file(file_name, bucket, object_name)
@@ -33,7 +28,7 @@ def upload_s3(file_name, object_name=None, s3_client=None, bucket="openrice"):
     return(True)
 
 
-def read_key_dflist(filedir, client=None, filepattern=None, bucket="openrice", quiet=False, min_page = None):
+def read_key_dflist(filedir, client=None, filepattern=None, bucket="protocolchina", quiet=False, min_page = None):
     """
     Reads in .csv files from S3 and returns list of (key, df) tuples
     :filedir: prefix of a boto3 search into s3
@@ -43,7 +38,7 @@ def read_key_dflist(filedir, client=None, filepattern=None, bucket="openrice", q
 
     # instantiate S3 client if needed
     if client is None:
-        client = DEV.client("s3")
+        client = boto3.client("s3")
 
     # get everything in the bucket and directory
     # need to create paginator, otherwise limits to 1000 objects
@@ -60,26 +55,11 @@ def read_key_dflist(filedir, client=None, filepattern=None, bucket="openrice", q
                 matched = re.match(filepattern, key)
                 is_match = bool(matched)
             # read in the CSV
-            # if is_match and ".csv"in key:
-            #     if not quiet:
-            #         logging.info(f"Reading in {key} from S3")
-            #     file_body = client.get_object(Bucket=bucket, Key=key).get('Body')
-            #     df = pd.read_csv(io.BytesIO(file_body.read()))
-            #     logging.info(f"adding {key} to file_ls")
-            #     outlist.append((key, df))
-            if is_match and ".jl"in key:
+            if is_match and ".csv" in key:
                 if not quiet:
                     logging.info(f"Reading in {key} from S3")
                 file_body = client.get_object(Bucket=bucket, Key=key).get('Body')
-                df = pd.read_json(io.BytesIO(file_body.read()), lines=True)
+                df = pd.read_csv(io.BytesIO(file_body.read()))
                 logging.info(f"adding {key} to file_ls")
                 outlist.append((key, df))
     return outlist
-
-
-ls = read_key_dflist(r"data/shop_meta")
-for k, df in ls:
-    filename = k.split("/")[-1]
-    df.to_json(f"../data/{filename}")
-    filename = filename.split(".")[0]
-    df.to_csv(f"../data/{filename}.csv")

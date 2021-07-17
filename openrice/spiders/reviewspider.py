@@ -17,7 +17,7 @@ class OpenriceSpider(scrapy.Spider):
     def start_requests(self):
         logging.info("starting requests")
         for id_, url in self.urls_ids:
-            logger.debug(f"starting scraping for original_url {url}")
+            logger.debug(f"starting scraping for original_url {url} and {id_}")
             yield scrapy.Request(url=url, callback=self.parse, cb_kwargs={"og_url": url, "id_": id_})
         # for url in self.start_urls:
         #     id_=1
@@ -31,7 +31,7 @@ class OpenriceSpider(scrapy.Spider):
         reviews = response.css(".sr2-review-list-container")
         counter = 0
         for review in reviews:
-            logging.info(f"calling reviewparse {counter} for {og_url}")
+            # logging.info(f"calling reviewparse {counter} for {og_url}")
             yield self.review_parse(review, og_url=og_url, id_=id_, current_url=response.url)
             counter+=1
         next_page = self.paginate(response)
