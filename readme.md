@@ -14,5 +14,3 @@ After that, need to write script to roll thru reviews and paginate ()
 
 18886 restaruants in  blue_eats shop meta and 1825 restaurants in blue_eats reviews, meaning 61 restaruant are missing. saved under shop_meta/blue_eats/blue_missing.csv
 
-yellow reviews need 1223 to end (2250)
-yellow right now has 1710 / 2250; need 1710 to end 
