@@ -59,7 +59,7 @@ queuelib==1.6.1
 requests==2.25.1
 scikit-learn==0.24.2
 scipy==1.7.0
-Scrapy==2.5.0
+Scrapy==2.6.0
 scrapy-proxy-pool==0.1.9
 scrapy-user-agents==0.1.1
 Scrapy-UserAgents==0.0.1
